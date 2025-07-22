@@ -6,26 +6,82 @@
 package com.mycompany.peluqueriacanina.igu;
 
 import com.mycompany.peluqueriacanina.logica.Controladora;
+import com.mycompany.peluqueriacanina.logica.Duenio;
+import com.mycompany.peluqueriacanina.logica.Mascota;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  *
  * @author luise
  */
-public class CargaDatos extends javax.swing.JFrame {
+public class ActualizarDatos extends javax.swing.JFrame {
 
-   Controladora control = new Controladora();
+   Controladora control = null;
+   Mascota mascota;
 
    
-    public CargaDatos() {
 
+   
+    public ActualizarDatos(int idMascota) {
+        
+        control = new Controladora();
         initComponents();
+        preCargaDatos(idMascota);
+        
     }
+   
+    private void mensajeEmergente(String mensaje, String tipo, String titulo){
+        JOptionPane optionPane = new JOptionPane(mensaje);
+        if(tipo.equals("Info")){
+            optionPane.setMessageType(JOptionPane.INFORMATION_MESSAGE);
+        }else if(tipo.equals("Error")){
+            optionPane.setMessageType(JOptionPane.ERROR_MESSAGE);
+        
+        }
+        JDialog dialog = optionPane.createDialog(titulo);
+        dialog.setAlwaysOnTop(true);
+        dialog.setVisible(true);
+    }
+    
+    public void preCargaDatos(int idMascota){
+   
+        
+        
+        // Traigo la mascota con el id obtenido y lo asigno a una variable
+        this.mascota = control.traerUnaMascota(idMascota);
+        
+        int cmbAlergicoInt = 0;
+        int cmbEspecialInt = 0;
+
+        String getAlergico = mascota.getAlergico().toLowerCase();
+        String getAtencionEspecial = mascota.getAtencionEspecial().toLowerCase();
 
 
- 
+        if(getAlergico.equals("si")){
+            cmbAlergicoInt = 1;
+        }else if(getAlergico.equals("no")){
+            cmbAlergicoInt = 2;
+        }
+
+        if(getAtencionEspecial.equals("si")){
+            cmbEspecialInt = 1;
+        }else if(getAtencionEspecial.equals("no")){
+            cmbEspecialInt = 2;
+        }
+        
+        txtNombre.setText(mascota.getNombre());
+        cmbAlergico.setSelectedIndex(cmbAlergicoInt);
+        cmbEspecial.setSelectedIndex(cmbEspecialInt);
+        txtCelDuenio.setText(mascota.getDuenio().getCelular());
+        txtColor.setText(mascota.getColor());
+        txtNombreDuenio.setText(mascota.getDuenio().getNombre());
+        txtObservaciones.setText(mascota.getObservaciones());
+        txtRaza.setText(mascota.getRaza());
+    }
     
  
     @SuppressWarnings("unchecked")
@@ -184,12 +240,12 @@ public class CargaDatos extends javax.swing.JFrame {
         );
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
-        jLabel1.setText("Carga de Datos");
+        jLabel1.setText("Actualizar Datos");
 
         jLabel2.setIcon(new javax.swing.ImageIcon("C:\\Users\\luise\\Downloads\\peluqueriaCanina.jpg")); // NOI18N
 
         btnGuardar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        btnGuardar.setText("Guardar");
+        btnGuardar.setText("Guardar Cambios");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGuardarActionPerformed(evt);
@@ -223,8 +279,8 @@ public class CargaDatos extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(180, 180, 180)
-                        .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(283, 283, 283))))
+                        .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(228, 228, 228))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -262,27 +318,33 @@ public class CargaDatos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // TODO add your handling code here:
+
+        control = new Controladora();
+        
+
+        // Todos los datos de la Mascota
         String nombreMasco = txtNombre.getText();
         String raza = txtRaza.getText();
         String color = txtColor.getText();
         String alergico = (String) cmbAlergico.getSelectedItem();
         String especial = (String) cmbEspecial.getSelectedItem();
+        String observaciones = txtObservaciones.getText();
+
+        // Todos los datos del Duenio
         String nombreDuenio = txtNombreDuenio.getText();
         String celDuenio = txtCelDuenio.getText();
-        String observaciones = txtObservaciones.getText();
         
-        control.guardar(nombreMasco,raza,color,alergico,especial,nombreDuenio,celDuenio,observaciones);
+        control.actualizarMascota(mascota,nombreMasco,raza,color,alergico,especial,observaciones, nombreDuenio,celDuenio); 
         
         // Ventaja emergente diciendo que se guardo correctamente 
-        JOptionPane optionPane = new JOptionPane("Se guardó correctamente");
-        optionPane.setMessageType(JOptionPane.INFORMATION_MESSAGE);
-        JDialog dialog = optionPane.createDialog("Guardado Exitoso!");
-        dialog.setAlwaysOnTop(true);
-        dialog.setVisible(true);
+        mensajeEmergente("Edición realizada correctamente","Info","Edición correcta");
         
+        VerDatos pantalla = new VerDatos();
+        pantalla.setVisible(true);
+        pantalla.setLocationRelativeTo(null);
        
-        
+        this.dispose();
+
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed

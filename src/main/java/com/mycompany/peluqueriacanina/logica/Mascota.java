@@ -29,6 +29,8 @@ public class Mascota implements Serializable {
     public Mascota() {
     }
 
+   
+    
     public Mascota(int num_cliente, String nombre, String raza, String color, String alergico, String atencionEspecial, String observaciones, Duenio unDuenio) {
         this.num_cliente = num_cliente;
         this.nombre = nombre;
@@ -104,6 +106,11 @@ public class Mascota implements Serializable {
 
     public void setDuenio(Duenio unDuenio) {
         this.unDuenio = unDuenio;
+    }
+
+    @Override
+    public String toString() {
+        return num_cliente + "," + nombre + "," + raza + "," + color + "," + alergico + "," + atencionEspecial + "," + observaciones + "," + unDuenio;
     }
     
     
